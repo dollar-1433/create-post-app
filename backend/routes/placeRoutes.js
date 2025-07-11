@@ -5,13 +5,9 @@ const {
   getPlacesByCountry,
   getAllPlaces,
   createCountry,
-  createPlace,
-  updateCountry,
-  updatePlace,
-  deleteCountry,
-  deletePlace
+  createPlace
 } = require('../controllers/placeController');
-const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
+const { protect, admin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -19,14 +15,10 @@ const router = express.Router();
 router.get('/countries', getCountries);
 router.get('/countries/:id', getCountryById);
 router.get('/countries/:countryId/places', getPlacesByCountry);
-router.get('/places', getAllPlaces);
+router.get('/', getAllPlaces);
 
 // Admin routes
-router.post('/countries', authMiddleware, adminMiddleware, createCountry);
-router.post('/places', authMiddleware, adminMiddleware, createPlace);
-router.put('/countries/:id', authMiddleware, adminMiddleware, updateCountry);
-router.put('/places/:id', authMiddleware, adminMiddleware, updatePlace);
-router.delete('/countries/:id', authMiddleware, adminMiddleware, deleteCountry);
-router.delete('/places/:id', authMiddleware, adminMiddleware, deletePlace);
+router.post('/countries', protect, admin, createCountry);
+router.post('/', protect, admin, createPlace);
 
 module.exports = router;

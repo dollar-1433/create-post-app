@@ -3,24 +3,34 @@ const mongoose = require('mongoose');
 const countrySchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Country name is required'],
-    unique: true,
-    trim: true
+    required: true,
+    unique: true
   },
   code: {
     type: String,
-    required: [true, 'Country code is required'],
+    required: true,
     unique: true,
-    uppercase: true,
-    length: 2
+    uppercase: true
   },
   flag: {
     type: String,
-    required: [true, 'Flag URL is required']
+    required: true
   },
   description: {
     type: String,
-    required: [true, 'Description is required']
+    required: true
+  },
+  capital: {
+    type: String,
+    required: true
+  },
+  currency: {
+    type: String,
+    required: true
+  },
+  language: {
+    type: String,
+    required: true
   },
   coordinates: {
     lat: {
@@ -32,9 +42,10 @@ const countrySchema = new mongoose.Schema({
       required: true
     }
   },
-  currency: String,
-  language: String,
-  timezone: String
+  image: {
+    type: String,
+    required: true
+  }
 }, {
   timestamps: true
 });

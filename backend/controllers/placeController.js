@@ -1,125 +1,122 @@
-const Country = require('../models/Country');
 const Place = require('../models/Place');
+const Country = require('../models/Country');
 
-// Get all countries
+// @desc    Get all countries
+// @route   GET /api/places/countries
+// @access  Public
 const getCountries = async (req, res) => {
   try {
-    const countries = await Country.find().sort({ name: 1 });
-    res.json(countries);
+    const countries = await Country.find({});
+    res.json({
+      success: true,
+      count: countries.length,
+      data: countries
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// Get country by ID
+// @desc    Get country by ID
+// @route   GET /api/places/countries/:id
+// @access  Public
 const getCountryById = async (req, res) => {
   try {
     const country = await Country.findById(req.params.id);
+    
     if (!country) {
-      return res.status(404).json({ message: 'Country not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'Country not found'
+      });
     }
-    res.json(country);
+
+    res.json({
+      success: true,
+      data: country
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// Get places by country
+// @desc    Get places by country
+// @route   GET /api/places/countries/:countryId/places
+// @access  Public
 const getPlacesByCountry = async (req, res) => {
   try {
-    const { countryId } = req.params;
-    const places = await Place.find({ country: countryId }).populate('country', 'name code flag');
-    res.json(places);
+    const places = await Place.find({ country: req.params.countryId }).populate('country');
+    res.json({
+      success: true,
+      count: places.length,
+      data: places
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// Get all places
+// @desc    Get all places
+// @route   GET /api/places
+// @access  Public
 const getAllPlaces = async (req, res) => {
   try {
-    const places = await Place.find().populate('country', 'name code flag').sort({ createdAt: -1 });
-    res.json(places);
+    const places = await Place.find({}).populate('country');
+    res.json({
+      success: true,
+      count: places.length,
+      data: places
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// Create country (Admin only)
+// @desc    Create new country
+// @route   POST /api/places/countries
+// @access  Private/Admin
 const createCountry = async (req, res) => {
   try {
     const country = await Country.create(req.body);
-    res.status(201).json(country);
+    res.status(201).json({
+      success: true,
+      data: country
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
-// Create place (Admin only)
+// @desc    Create new place
+// @route   POST /api/places
+// @access  Private/Admin
 const createPlace = async (req, res) => {
   try {
     const place = await Place.create(req.body);
-    const populatedPlace = await Place.findById(place._id).populate('country', 'name code flag');
-    res.status(201).json(populatedPlace);
+    res.status(201).json({
+      success: true,
+      data: place
+    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Update country (Admin only)
-const updateCountry = async (req, res) => {
-  try {
-    const country = await Country.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!country) {
-      return res.status(404).json({ message: 'Country not found' });
-    }
-    res.json(country);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Update place (Admin only)
-const updatePlace = async (req, res) => {
-  try {
-    const place = await Place.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('country', 'name code flag');
-    if (!place) {
-      return res.status(404).json({ message: 'Place not found' });
-    }
-    res.json(place);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Delete country (Admin only)
-const deleteCountry = async (req, res) => {
-  try {
-    const country = await Country.findById(req.params.id);
-    if (!country) {
-      return res.status(404).json({ message: 'Country not found' });
-    }
-    
-    // Delete all places in this country
-    await Place.deleteMany({ country: req.params.id });
-    await Country.findByIdAndDelete(req.params.id);
-    
-    res.json({ message: 'Country and associated places deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// Delete place (Admin only)
-const deletePlace = async (req, res) => {
-  try {
-    const place = await Place.findByIdAndDelete(req.params.id);
-    if (!place) {
-      return res.status(404).json({ message: 'Place not found' });
-    }
-    res.json({ message: 'Place deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
@@ -129,9 +126,5 @@ module.exports = {
   getPlacesByCountry,
   getAllPlaces,
   createCountry,
-  createPlace,
-  updateCountry,
-  updatePlace,
-  deleteCountry,
-  deletePlace
+  createPlace
 };

@@ -3,20 +3,19 @@ const mongoose = require('mongoose');
 const placeSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Place name is required'],
-    trim: true
+    required: true
   },
   description: {
     type: String,
-    required: [true, 'Description is required']
+    required: true
   },
   image: {
     type: String,
-    required: [true, 'Image URL is required']
+    required: true
   },
   location: {
     type: String,
-    required: [true, 'Location is required']
+    required: true
   },
   coordinates: {
     lat: {
@@ -33,19 +32,21 @@ const placeSchema = new mongoose.Schema({
     ref: 'Country',
     required: true
   },
+  category: {
+    type: String,
+    enum: ['historical', 'natural', 'cultural', 'adventure', 'religious', 'modern'],
+    default: 'cultural'
+  },
   rating: {
     type: Number,
     min: 1,
     max: 5,
     default: 4.5
   },
-  category: {
+  bestTimeToVisit: {
     type: String,
-    enum: ['historical', 'natural', 'cultural', 'adventure', 'religious', 'modern'],
-    default: 'cultural'
-  },
-  bestTimeToVisit: String,
-  entryFee: String
+    required: true
+  }
 }, {
   timestamps: true
 });

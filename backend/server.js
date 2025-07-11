@@ -1,35 +1,34 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-require('dotenv').config();
-
+const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const userRoutes = require('./routes/userRoutes');
-const placeRoutes = require('./routes/placeRoutes');
+
+// Load env vars
+dotenv.config();
 
 // Connect to database
 connectDB();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Body parser middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// CORS middleware
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
 
 // Routes
-app.use('/api/users', userRoutes);
-app.use('/api', placeRoutes);
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/places', require('./routes/placeRoutes'));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
-});
-
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+// Basic route
+app.get('/', (req, res) => {
+  res.json({ message: 'Tourist App API is running!' });
 });
 
 const PORT = process.env.PORT || 5000;
